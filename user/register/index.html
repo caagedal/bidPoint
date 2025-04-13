@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/src/style.css" />
+    <title>bidPoint | Register</title>
+  </head>
+  <body>
+    <header>  </header>
+    <main>
+      <h1>Welcome to bidPoint</h1>
+      <div>
+        <form id="register">
+          <div>
+            <div class="">
+              <label for="regName">Name</label>
+              <input
+                id="regName"
+                name="name"
+                type="text"
+                placeholder="Name"
+                aria-required="true"
+                pattern="^[\w]+$"
+                title="Name cannot contain special characters or symbols."
+                class=""
+                required
+              >
+            </div>
+            <div>
+              <label for="regMail">Email</label>
+              <input
+                id="regMail"
+                name="email"
+                type="email"
+                placeholder="example@stud.noroff.no"
+                autocomplete="email"
+                aria-required="true"
+                pattern="^[\w\-.]+@stud.noroff.no$"
+                title="Only emails ending in stud.noroff.no can log in."
+                class=""
+                required
+              >
+            </div>
+            <div>
+              <label for="regPassword">Password</label>
+              <input
+                id="regPassword"
+                name="password"
+                type="password"
+                placeholder="Create a password, at least 8 characters"
+                minlength="8"
+                autocomplete="new-password"
+                aria-required="true"
+                title="Password needs to be 8 characters or longer."
+                class=""
+                required
+              >
+            </div>
+            <div>
+              <label for="confirmPassword">Confirm password</label>
+              <input
+                id="confirmPassword"
+                name="confirmPassword"
+                type="password"
+                placeholder="Confirm password"
+                minlength="8"
+                autocomplete="new-password"
+                aria-required="true"
+                title="Reapeat your password to confirm it."
+                class=""
+                required
+              >
+            </div> 
+          </div>
+          <div>
+            <div>
+              <label for="regAvatar">Avatar (optional)</label>
+              <input
+                id="regAvatar"
+                name="avatar"
+                type="url"
+                placeholder="Avatar-url"
+                aria-required="false"
+                title="Only image urls are accepted."
+                class=""
+              >
+              <label for="regAvatarAlt">Avatar alt</label>
+              <input
+                id="regAvatarAlt"
+                name="avatarAlt"
+                type="text"
+                placeholder="Avatar alt"
+                aria-required="false"
+                class=""
+              >               
+            </div>
+            <div>
+              <label for="regBanner">Banner (optional)</label>
+              <input
+                id="regBanner"
+                name="banner"
+                type="url"
+                placeholder="Banner-url"
+                aria-required="false"
+                title="Only image urls are accepted."
+                class=""
+              >
+              <label for="regBannerAlt">Banner alt</label>
+              <input
+                id="regBannerAlt"
+                name="bannerAlt"
+                type="text"
+                placeholder="Banner alt"
+                aria-required="false"
+                class=""
+              > 
+            </div>
+            <div>
+              <label for="regBio">Bio (optional)</label>
+              <input
+                id="regBio"
+                name="Bio"
+                type="text"
+                placeholder="Enter bio"
+                aria-required="false"
+                class=""
+              >
+            </div>
+          </div>
+        </form>
+      </div>
+      <a href="/index.html">Return home</a>
+    </main>
+    <footer></footer>
+  </body>
+</html>
