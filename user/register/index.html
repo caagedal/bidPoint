@@ -5,132 +5,100 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="/src/style.css" />
     <title>bidPoint | Register</title>
+    <script src="https://kit.fontawesome.com/4639419757.js" crossorigin="anonymous"></script>
   </head>
-  <body>
-    <header>  </header>
-    <main>
-      <h1>Welcome to bidPoint</h1>
-      <div>
-        <form id="register">
-          <div>
-            <div class="">
-              <label for="regName">Name</label>
+  <body class="">
+    <header></header>
+    <main class="flex flex-col min-h-screen mx-auto items-center justify-center px-4">
+      <h1 class="text-4xl sm:text-5xl md:text-6xl font-rock font-semibold py-10 text-center">bidPoint</h1>
+      <div class="w-full max-w-xl">
+        <form id="register" class="w-full flex flex-col gap-7 font-inter">
+          <div class="flex flex-col gap-5">
+            <div class="flex flex-col relative">
+              <i class="fa-solid fa-user absolute top-1/2 text-gray-500 -translate-y-1/2 left-4"></i>
               <input
                 id="regName"
                 name="name"
                 type="text"
-                placeholder="Name"
+                placeholder="Username *"
                 aria-required="true"
                 pattern="^[\w]+$"
                 title="Name cannot contain special characters or symbols."
-                class=""
+                class="border-gray-400 border-2 rounded-xl pl-10 p-3 w-full"
                 required
               >
             </div>
-            <div>
-              <label for="regMail">Email</label>
+            <div class="flex flex-col relative">
+              <i class="fa-solid fa-envelope absolute top-1/2 text-gray-500 -translate-y-1/2 left-4"></i>
               <input
                 id="regMail"
                 name="email"
                 type="email"
-                placeholder="example@stud.noroff.no"
+                placeholder="Email *"
                 autocomplete="email"
                 aria-required="true"
                 pattern="^[\w\-.]+@stud.noroff.no$"
                 title="Only emails ending in stud.noroff.no can log in."
-                class=""
+                class="border-gray-400 border-2 rounded-xl pl-10 p-3 w-full"
                 required
               >
             </div>
-            <div>
-              <label for="regPassword">Password</label>
+            <div class="flex flex-col relative">
+              <i class="fa-solid fa-lock absolute top-1/2 text-gray-500 -translate-y-1/2 left-4"></i>
               <input
                 id="regPassword"
                 name="password"
                 type="password"
-                placeholder="Create a password, at least 8 characters"
+                placeholder="Password *"
                 minlength="8"
                 autocomplete="new-password"
                 aria-required="true"
                 title="Password needs to be 8 characters or longer."
-                class=""
+                class="border-gray-400 border-2 rounded-xl pl-10 p-3 w-full"
                 required
               >
             </div>
-            <div>
-              <label for="confirmPassword">Confirm password</label>
-              <input
-                id="confirmPassword"
-                name="confirmPassword"
-                type="password"
-                placeholder="Confirm password"
-                minlength="8"
-                autocomplete="new-password"
-                aria-required="true"
-                title="Reapeat your password to confirm it."
-                class=""
-                required
-              >
-            </div> 
           </div>
-          <div>
-            <div>
-              <label for="regAvatar">Avatar (optional)</label>
+
+          <div class="flex flex-col gap-5">
+            <div class="flex flex-col">
+              <label for="regAvatar" class="font-bold py-2">Avatar</label>
               <input
                 id="regAvatar"
                 name="avatar"
                 type="url"
                 placeholder="Avatar-url"
-                aria-required="false"
                 title="Only image urls are accepted."
-                class=""
-              >
-              <label for="regAvatarAlt">Avatar alt</label>
-              <input
-                id="regAvatarAlt"
-                name="avatarAlt"
-                type="text"
-                placeholder="Avatar alt"
-                aria-required="false"
-                class=""
-              >               
+                class="border-gray-400 border-2 rounded-xl p-2 w-full"
+              >      
             </div>
-            <div>
-              <label for="regBanner">Banner (optional)</label>
+            <div class="flex flex-col">
+              <label for="regBanner" class="font-bold py-2">Banner</label>
               <input
                 id="regBanner"
                 name="banner"
                 type="url"
                 placeholder="Banner-url"
-                aria-required="false"
                 title="Only image urls are accepted."
-                class=""
+                class="border-gray-400 border-2 rounded-xl p-2 w-full"
               >
-              <label for="regBannerAlt">Banner alt</label>
-              <input
-                id="regBannerAlt"
-                name="bannerAlt"
-                type="text"
-                placeholder="Banner alt"
-                aria-required="false"
-                class=""
-              > 
             </div>
-            <div>
-              <label for="regBio">Bio (optional)</label>
+            <div class="flex flex-col">
+              <label for="regBio" class="font-bold py-2">Bio</label>
               <input
                 id="regBio"
                 name="Bio"
                 type="text"
                 placeholder="Enter bio"
-                aria-required="false"
-                class=""
+                class="border-gray-400 border-2 rounded-xl p-2 w-full"
               >
             </div>
           </div>
+
+          <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-xl transition">Sign up!</button>
         </form>
       </div>
-      <a href="/index.html">Return home</a>
+      <a href="/index.html" class="mt-5 text-blue-500 hover:underline">Return home</a>
     </main>
     <footer></footer>
   </body>
