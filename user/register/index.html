@@ -6,13 +6,14 @@
     <link rel="stylesheet" href="/src/style.css" />
     <title>bidPoint | Register</title>
     <script src="https://kit.fontawesome.com/4639419757.js" crossorigin="anonymous"></script>
+    <script src="/src/js/pages/registerPage.mjs" type="module"></script>
   </head>
   <body class="">
     <header></header>
     <main class="flex flex-col min-h-screen mx-auto items-center justify-center px-4">
       <h1 class="text-4xl sm:text-5xl md:text-6xl font-rock font-semibold py-10 text-center">bidPoint</h1>
       <div class="w-full max-w-xl">
-        <form id="register" class="w-full flex flex-col gap-7 font-inter">
+        <form id="registerForm" class="w-full flex flex-col gap-7 font-inter">
           <div class="flex flex-col gap-5">
             <div class="flex flex-col relative">
               <i class="fa-solid fa-user absolute top-1/2 text-gray-500 -translate-y-1/2 left-4"></i>
@@ -59,38 +60,41 @@
               >
             </div>
           </div>
-
           <div class="flex flex-col gap-5">
-            <div class="flex flex-col">
-              <label for="regAvatar" class="font-bold py-2">Avatar</label>
+            <h2 class="font-bold">Optional</h2>
+            <div class="flex relative">
+              <!-- <label for="regAvatar" class="font-bold py-2">Avatar</label> -->
+              <i class="fa-solid fa-image-portrait absolute top-1/2 text-gray-500 -translate-y-1/2 left-4"></i>
               <input
                 id="regAvatar"
                 name="avatar"
                 type="url"
                 placeholder="Avatar-url"
                 title="Only image urls are accepted."
-                class="border-gray-400 border-2 rounded-xl p-2 w-full"
+                class="border-gray-400 border-2 rounded-xl pl-10 p-2 w-full"
               >      
             </div>
-            <div class="flex flex-col">
-              <label for="regBanner" class="font-bold py-2">Banner</label>
+            <div class="flex relative">
+              <!-- <label for="regBanner" class="font-bold py-2">Banner</label> -->
+              <i class="fa-solid fa-image absolute top-1/2 text-gray-500 -translate-y-1/2 left-4"></i>
               <input
                 id="regBanner"
                 name="banner"
                 type="url"
                 placeholder="Banner-url"
                 title="Only image urls are accepted."
-                class="border-gray-400 border-2 rounded-xl p-2 w-full"
+                class="border-gray-400 border-2 rounded-xl pl-10 p-2 w-full"
               >
             </div>
-            <div class="flex flex-col">
-              <label for="regBio" class="font-bold py-2">Bio</label>
+            <div class="flex relative">
+              <!-- <label for="regBio" class="font-bold py-2">Bio</label> -->
+              <i class="fa-solid fa-file-pen absolute top-1/2 text-gray-500 -translate-y-1/2 left-4"></i>
               <input
                 id="regBio"
                 name="Bio"
                 type="text"
                 placeholder="Enter bio"
-                class="border-gray-400 border-2 rounded-xl p-2 w-full"
+                class="border-gray-400 border-2 rounded-xl pl-10 p-2 w-full"
               >
             </div>
           </div>
