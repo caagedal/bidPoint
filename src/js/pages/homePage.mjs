@@ -1,6 +1,3 @@
-// import { getListings } from "../api/listings/getListings.mjs";
-// import { listingCard } from "../components/listingCard.mjs";
-
 import { getListings } from "../api/listings/display.mjs";
 import { listingCard } from "../components/listingCard.mjs";
 

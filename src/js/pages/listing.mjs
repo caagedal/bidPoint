@@ -1,194 +1,142 @@
-// import { getListing } from "../api/listings/display.mjs";
-// import { getUser } from "../utils/getUser.mjs";
-
-// const params = new URLSearchParams(window.location.search);
-// const id = params.get("id");
-// const main = document.querySelector("#listingId");
-
-// export async function renderListing() {
-//   if (!id) {
-//     main.textContent = "No listing ID found.";
-//     return;
-//   }
-
-//   try {
-//     const listing = await getListing(id);
-//     const user = getUser();
-
-//     const container = document.createElement("div");
-//     container.classList.add("flex", "flex-col", "gap-4");
-
-//     // Image
-//     const img = document.createElement("img");
-//     img.src = listing.media?.[0]?.url || "https://via.placeholder.com/600x400";
-//     img.alt = listing.title;
-//     img.classList.add("w-full", "rounded", "shadow");
-
-//     // Title + Description
-//     const title = document.createElement("h1");
-//     title.textContent = listing.title;
-//     title.classList.add("text-3xl", "font-bold");
-
-//     const desc = document.createElement("p");
-//     desc.textContent = listing.description || "No description.";
-//     desc.classList.add("text-gray-600");
-
-//     container.append(img, title, desc);
-
-//     // Check if user can bid
-//     if (user && user.name !== listing.seller.name) {
-//       const form = document.createElement("form");
-//       form.classList.add("flex", "gap-2");
-
-//       const input = document.createElement("input");
-//       input.type = "number";
-//       input.min = 1;
-//       input.placeholder = "Your bid...";
-//       input.classList.add("border", "p-2", "rounded");
-
-//       const btn = document.createElement("button");
-//       btn.textContent = "Place bid";
-//       btn.type = "submit";
-//       btn.classList.add("bg-blue-600", "text-white", "px-4", "py-2", "rounded");
-
-//       form.append(input, btn);
-//       container.appendChild(form);
-
-//       form.addEventListener("submit", (e) => {
-//         e.preventDefault();
-//         const bidAmount = parseFloat(input.value);
-//         // TODO: validate + send to API
-//         console.log("Place bid:", bidAmount);
-//       });
-//     } else if (!user) {
-//       const msg = document.createElement("p");
-//       msg.textContent = "You must be logged in to place a bid.";
-//       msg.classList.add("text-red-500");
-//       container.appendChild(msg);
-//     }
-
-//     main.appendChild(container);
-//   } catch (error) {
-//     console.error("Error loading listing:", error);
-//     main.textContent = "Could not load listing.";
-//   }
-// }
-
-// renderListing();
-
-
 import { getListing } from "../api/listings/display.mjs";
-import { getUser } from "../utils/getUser.mjs";
-// import { placeBid } from "../api/listings/bids.mjs"; // hvis du lager denne!
+import { isLoggedIn, getUser } from "../api/auth/session.mjs";
+import { createCountdown } from "../utils/countDownTimer.mjs";
+import { createBidHistoryCard } from "../components/listing/bidHistoryCard.mjs";
+import { errorMessage } from "../components/errorMessage.mjs";
+import { createCarousel } from "../components/gallery/carousel.mjs";
+
+import { placeBid } from "../api/listings/bid.mjs";
+import { createBidModal } from "../components/listing/bidModal.mjs";
+
 
 const params = new URLSearchParams(window.location.search);
 const id = params.get("id");
-const main = document.querySelector("#listingId");
 
-export async function renderListing() {
+export async function renderListing(){
+
+  const main = document.querySelector("#listingId");  
+
   if (!id) {
     main.textContent = "No listing ID found.";
     return;
   }
 
-  try {
-    const { data: listing } = await getListing(id); // viktig at getListing returnerer { data }
+  try{
+    const listing = await getListing(id);
     const user = getUser();
+    const bids = listing.bids || [];
+    const lastBid = bids.length > 0 ? Math.max(...bids.map((bid) => bid.amount)) : 0;
 
-    const container = document.createElement("div");
-    container.classList.add("flex", "flex-col", "gap-4", "max-w-3xl", "mx-auto", "p-4");
+    // Wrapper - 1
+    const wrapper = document.createElement("div");
+    wrapper.classList.add("flex", "flex-col")
 
-    // 🖼️ Bilde
-    const img = document.createElement("img");
-    img.src = listing.media?.[0]?.url || "https://via.placeholder.com/600x400";
-    img.alt = listing.title;
-    img.classList.add("w-full", "rounded", "shadow");
+    // Image container - 2
+    // const imgContainer = document.createElement("div");
+    // imgContainer.id = "imgContainer";
+    const imgCarousel = createCarousel(listing.media);
 
-    // 🏷️ Tittel
+    // Content container - 2
+    const contentContainer = document.createElement("div");
+    contentContainer.classList.add("flex", "flex-col", "p-6");
+
+    // text-container
+    const infoContainer = document.createElement("div");
+    infoContainer.classList.add("flex", "justify-between");
+
+    const textContainer = document.createElement("div");
+    textContainer.classList.add("flex", "flex-col");
+
+    const sellerLink = document.createElement("a");
+    sellerLink.href = `/profile/?name=${listing.seller?.name}`;
+    sellerLink.textContent = listing.seller?.name;
+
     const title = document.createElement("h1");
     title.textContent = listing.title;
-    title.classList.add("text-3xl", "font-bold");
 
-    // 📝 Beskrivelse
-    const desc = document.createElement("p");
-    desc.textContent = listing.description || "No description provided.";
-    desc.classList.add("text-gray-700");
+    textContainer.append(sellerLink, title);
 
-    // 👤 Selger
-    const seller = document.createElement("p");
-    seller.innerHTML = `<strong>Seller:</strong> ${listing.seller?.name || "Unknown"}`;
+    // Current bid information
+    const currentBidInfo = document.createElement("div");
+    currentBidInfo.classList.add("flex", "flex-col");
 
-    // 💰 Høyeste bud
-    const bids = listing.bids || [];
-    const highestBid = bids.length > 0 ? Math.max(...bids.map(bid => bid.amount)) : 0;
+    const currentBid = document.createElement("p");
+    currentBid.classList.add("text-gray-500");
+    currentBid.textContent = "Current bid";
 
-    const bidInfo = document.createElement("p");
-    bidInfo.innerHTML = `<strong>Current highest bid:</strong> $${highestBid}`;
+    const currentBidAmount = document.createElement("p");
+    currentBidAmount.classList.add("font-semibold");
+    currentBidAmount.textContent = "$" + lastBid;
 
-    container.append(img, title, desc, seller, bidInfo);
+    currentBidInfo.append(currentBid, currentBidAmount);
 
-    // 🎯 Budskjema (hvis IKKE eier og logget inn)
-    if (user && user.name !== listing.seller?.name) {
-      const form = document.createElement("form");
-      form.classList.add("flex", "gap-2", "items-center");
+    // Countdown container - 3
+    const countDownContainer = document.createElement("div");
 
-      const input = document.createElement("input");
-      input.type = "number";
-      input.min = highestBid + 1;
-      input.placeholder = `Min: $${highestBid + 1}`;
-      input.classList.add("border", "p-2", "rounded", "w-32");
+    createCountdown(listing.endsAt, (text, expired) => {
+      countDownContainer.textContent = text;
+    });
 
-      const btn = document.createElement("button");
-      btn.textContent = "Place bid";
-      btn.type = "submit";
-      btn.classList.add("bg-blue-600", "text-white", "px-4", "py-2", "rounded");
+    // Bid history container - 3
+    const historyContainer = document.createElement("div");
+    historyContainer.classList.add("flex", "flex-wrap", "gap-6");
 
-      form.append(input, btn);
-      container.appendChild(form);
+    bids
+  .sort((a, b) => new Date(b.created) - new Date(a.created))
+  .forEach((bid) => {
+    const bidCard = createBidHistoryCard(bid);
+    historyContainer.append(bidCard);
+  });
 
-      form.addEventListener("submit", async (e) => {
-        e.preventDefault();
-        const bidAmount = parseFloat(input.value);
+    
+    // bid button - 3 
+    const bidButtonContainer = document.createElement("div");
 
-        if (isNaN(bidAmount) || bidAmount <= highestBid) {
-          alert(`Please enter a valid bid greater than $${highestBid}`);
-          return;
-        }
+    if (!isLoggedIn()){
+      const logInMessage = document.createElement("p");
+      logInMessage.classList.add("font-semibold");
+      logInMessage.textContent = "You have to be logged in to place a bid.";
 
-        // TODO: Send til API:
-        console.log("💸 Placing bid:", bidAmount);
+      const loginLink = document.createElement("a");
+      loginLink.href = "/user/login";
 
-        // Eksempel:
-        // try {
-        //   await placeBid(listing.id, bidAmount);
-        //   alert("Bid placed!");
-        //   location.reload();
-        // } catch (error) {
-        //   console.error("Failed to place bid:", error);
-        //   alert("Could not place bid.");
-        // }
+      bidButtonContainer.append(logInMessage, loginLink);
+    }else if(user?.name === listing.seller?.name){
+      const userMessage = document.createElement("p");
+      userMessage.classList.add("font-semibold");
+      userMessage.textContent = "You cannot place bids on your own listings."
+
+      bidButtonContainer.append(userMessage);
+    }else{
+      const bidButton = document.createElement("button");
+      bidButton.classList.add("bg-violet-700","rounded-4xl","py-3", "px-12", "text-white", "font-semibold");
+      bidButton.textContent = "Place bid";
+      bidButton.addEventListener("click", () => {
+        createBidModal({
+          listing,
+          minBid: lastBid + 1,
+          onSubmit: async (amount) => {
+            await placeBid(listing.id, amount);
+          },
+        });
       });
-    } 
-    // 🛑 Eier
-    else if (user && user.name === listing.seller?.name) {
-      const msg = document.createElement("p");
-      msg.textContent = "You are the seller of this listing.";
-      msg.classList.add("text-yellow-600", "font-medium");
-      container.appendChild(msg);
-    } 
-    // ❌ Ikke logget inn
-    else {
-      const msg = document.createElement("p");
-      msg.textContent = "You must be logged in to place a bid.";
-      msg.classList.add("text-red-500");
-      container.appendChild(msg);
-    }
 
-    main.appendChild(container);
-  } catch (error) {
+
+      bidButtonContainer.append(bidButton);
+
+    }
+    
+    wrapper.append(imgCarousel, contentContainer);
+    contentContainer.append(infoContainer, countDownContainer, bidButtonContainer, historyContainer);
+    infoContainer.append(textContainer, currentBidInfo);
+    main.append(wrapper);
+  }catch (error) {
     console.error("Error loading listing:", error);
-    main.textContent = "Could not load listing.";
+    errorMessage("main", error.message);
   }
+  
+
 }
 
 renderListing();
+

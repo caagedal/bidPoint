@@ -419,10 +419,11 @@
   
 //     return wrapper;
 //   }
+import { createCountdown } from "../utils/countDownTimer.mjs";
 
 export function listingCard(listing) {
     const imageUrl =
-      listing.media?.[0]?.url || "https://via.placeholder.com/300x200?text=No+Image";
+      listing.media?.[0]?.url || "/public/bidPoint.jpg";
   
     const wrapper = document.createElement("div");
     wrapper.classList.add("flex", "flex-col", "items-center", "gap-2");
@@ -480,32 +481,41 @@ export function listingCard(listing) {
     const currentBid = document.createElement("p");
     currentBid.classList.add("text-gray-700");
     currentBid.textContent = `Current bid: $${highestBid}`;
-  
-    // Countdown-funksjon
-    const updateCountdown = () => {
-      const endsAt = new Date(listing.endsAt);
-      const now = new Date();
-      const diff = endsAt - now;
-  
-      if (diff <= 0) {
-        countdown.textContent = "Auction ended";
-        countdown.classList.add("text-red-600");
-  
+
+    // countdown
+    createCountdown(listing.endsAt, (text, expired) => {
+      countdown.textContent = text;
+      if (expired){
         image.classList.add("grayscale", "brightness-75");
-        return;
+        countdown.classList.add()
       }
+    });
   
-      const totalSeconds = Math.floor(diff / 1000);
-      const days = Math.floor(totalSeconds / (3600 * 24));
-      const hours = Math.floor((totalSeconds % (3600 * 24)) / 3600);
-      const minutes = Math.floor((totalSeconds % 3600) / 60);
-      const seconds = totalSeconds % 60;
+    // // Countdown-funksjon
+    // const updateCountdown = () => {
+    //   const endsAt = new Date(listing.endsAt);
+    //   const now = new Date();
+    //   const diff = endsAt - now;
   
-      countdown.textContent = `${days}d ${hours}h ${minutes}m ${seconds}s`;
-    };
+    //   if (diff <= 0) {
+    //     countdown.textContent = "Auction ended";
+    //     countdown.classList.add("text-red-600");
   
-    updateCountdown();
-    setInterval(updateCountdown, 1000);
+    //     image.classList.add("grayscale", "brightness-75");
+    //     return;
+    //   }
+  
+    //   const totalSeconds = Math.floor(diff / 1000);
+    //   const days = Math.floor(totalSeconds / (3600 * 24));
+    //   const hours = Math.floor((totalSeconds % (3600 * 24)) / 3600);
+    //   const minutes = Math.floor((totalSeconds % 3600) / 60);
+    //   const seconds = totalSeconds % 60;
+  
+    //   countdown.textContent = `${days}d ${hours}h ${minutes}m ${seconds}s`;
+    // };
+  
+    // updateCountdown();
+    // setInterval(updateCountdown, 1000);
   
     infoContainer.append(title, currentBid);
     link.append(imageWrapper, infoContainer);

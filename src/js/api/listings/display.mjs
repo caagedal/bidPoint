@@ -23,8 +23,10 @@ export async function getListing(id) {
 
   try {
     const url = `${API_LISTINGS}/${id}${detailQuery}`;
-    return await authFetch(url);
+    const response = await authFetch(url);
+    return response.data; // ✅ riktig struktur
   } catch (error) {
     throw new Error("Error getting listing: " + error.message);
   }
 }
+

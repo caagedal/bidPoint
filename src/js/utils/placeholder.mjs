@@ -1,0 +1,1 @@
+export const placeholder= "/public/bidPoint.jpg";
