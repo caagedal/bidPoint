@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/src/style.css" />
+    <title>bidPoint | Register</title>
+    <script src="https://kit.fontawesome.com/4639419757.js" crossorigin="anonymous"></script>
+    <script type="module" src="/src/js/main.mjs"></script>
+  </head>
+  <body class="">
+    <header></header>
+    <main class="flex flex-col min-h-screen mx-auto items-center justify-center px-4">
+      <h1 class="text-4xl sm:text-5xl md:text-6xl font-rock font-semibold py-10 text-center">bidPoint</h1>
+      <div class="w-full max-w-xl">
+        <form id="loginForm" class="w-full flex flex-col gap-7 font-inter">
+          <div class="flex flex-col gap-5">
+            
+            <div class="flex flex-col relative">
+              <i class="fa-solid fa-envelope absolute top-1/2 text-gray-500 -translate-y-1/2 left-4"></i>
+              <input
+                id="loginMail"
+                name="email"
+                type="email"
+                placeholder="Email *"
+                autocomplete="email"
+                aria-required="true"
+                pattern="^[\w\-.]+@stud.noroff.no$"
+                title="Only emails ending in stud.noroff.no can log in."
+                class="border-gray-400 border-2 rounded-xl pl-10 p-3 w-full"
+                required
+              >
+            </div>
+            <div class="flex flex-col relative">
+              <i class="fa-solid fa-lock absolute top-1/2 text-gray-500 -translate-y-1/2 left-4"></i>
+              <input
+                id="loginPassword"
+                name="password"
+                type="password"
+                placeholder="Password *"
+                minlength="8"
+                autocomplete="current-password"
+                aria-required="true"
+                title="Password needs to be 8 characters or longer."
+                class="border-gray-400 border-2 rounded-xl pl-10 p-3 w-full"
+                required
+              >
+              
+            </div>
+          </div>
+          
+
+          <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-xl transition">Sign in!</button>
+        </form>
+      </div>
+      <a href="/index.html" class="mt-5 text-blue-500 hover:underline">Return home</a>
+    </main>
+    <footer></footer>
+  </body>
+</html>
