@@ -2,6 +2,7 @@ import { getListings } from "../api/listings/display.mjs";
 import { listingCard } from "../components/listingCard.mjs";
 import { renderSearchResults } from "../components/listing/renderSearchResults.mjs";
 import { renderPagination } from "../components/listing/renderPagination.mjs";
+import { createHeader } from "../components/header.mjs";
 
 export async function renderListings(limit = 24, page = 1) {
   const grid = document.querySelector(".listing-grid");
@@ -49,3 +50,6 @@ export async function renderListings(limit = 24, page = 1) {
     pagination.innerHTML = "";
   }
 }
+
+renderListings();
+createHeader();

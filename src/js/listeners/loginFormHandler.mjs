@@ -1,4 +1,5 @@
 import { loginUser } from "../api/auth/login.mjs";
+import { createHeader } from "../components/header.mjs";
 
 export function loginForm() {
   const form = document.querySelector("#loginForm");
@@ -21,3 +22,6 @@ export function loginForm() {
     }
   });
 }
+
+createHeader();
+loginForm();

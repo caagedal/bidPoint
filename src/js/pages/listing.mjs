@@ -6,6 +6,7 @@ import { errorMessage } from "../components/errorMessage.mjs";
 import { createCarousel } from "../components/gallery/carousel.mjs";
 import { placeBid } from "../api/listings/bid.mjs";
 import { createBidModal } from "../components/listing/bidModal.mjs";
+import { createHeader } from "../components/header.mjs";
 
 const params = new URLSearchParams(window.location.search);
 const id = params.get("id");
@@ -152,3 +153,6 @@ export async function renderListing() {
     errorMessage("main", error.message);
   }
 }
+
+createHeader();
+renderListing();

@@ -4,6 +4,7 @@ import { listingCard } from "../components/listingCard.mjs";
 import { deleteListing } from "../api/listings/delete.mjs";
 import { createListingModal } from "../components/createListingModal.mjs";
 import { updateProfileModal } from "../components/updateProfileModal.mjs";
+import { createHeader } from "../components/header.mjs";
 
 export async function renderProfile() {
   const main = document.querySelector("#profilePage");
@@ -166,4 +167,5 @@ if (!main) {
   }
 }
 
-
+renderProfile();
+createHeader();

@@ -1,5 +1,6 @@
 import { registerUser } from "../api/auth/register.mjs";    
 import { loginUser } from "../api/auth/login.mjs";
+import { createHeader } from "../components/header.mjs";
 
 export function registerForm() {
   const form = document.querySelector("#registerForm");
@@ -29,3 +30,6 @@ export function registerForm() {
     }
   });
 }
+
+createHeader();
+registerForm();
