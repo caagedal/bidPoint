@@ -1,104 +1,115 @@
-// src/js/components/createListingModal.mjs
 import { createListing } from "../api/listings/create.mjs";
 
 export function createListingModal() {
-  // 🔄 Fjern eksisterende modal hvis den finnes
+  // Fjern tidligere modal hvis den finnes
   document.querySelectorAll(".create-listing-modal").forEach((m) => m.remove());
 
-  // 🖤 Bakgrunn
   const modal = document.createElement("div");
   modal.classList.add(
     "fixed", "inset-0", "bg-black/60", "flex", "items-center", "justify-center", "z-50", "create-listing-modal"
   );
 
-  // 💬 Innhold
   const dialog = document.createElement("div");
-  dialog.classList.add("bg-white", "rounded-xl", "p-6", "w-full", "max-w-md", "shadow-lg", "flex", "flex-col", "gap-4");
+  dialog.classList.add(
+    "bg-white", "rounded-xl", "p-6", "max-w-md", "w-full", "flex", "flex-col", "gap-4", "shadow-lg"
+  );
 
-  const heading = document.createElement("h2");
-  heading.textContent = "Create New Listing";
-  heading.classList.add("text-xl", "font-bold", "text-center");
+  const title = document.createElement("h2");
+  title.textContent = "Create New Listing";
+  title.classList.add("text-xl", "font-bold", "text-center");
 
   const titleInput = document.createElement("input");
+  titleInput.type = "text";
   titleInput.placeholder = "Title";
-  titleInput.classList.add("p-2", "border", "rounded");
+  titleInput.classList.add("border", "rounded", "p-2", "w-full");
 
   const descInput = document.createElement("textarea");
   descInput.placeholder = "Description";
-  descInput.classList.add("p-2", "border", "rounded");
+  descInput.classList.add("border", "rounded", "p-2", "w-full");
 
-  const tagsInput = document.createElement("input");
-  tagsInput.placeholder = "Tags (comma-separated)";
-  tagsInput.classList.add("p-2", "border", "rounded");
+  const endInput = document.createElement("input");
+  endInput.type = "datetime-local";
+  endInput.classList.add("border", "rounded", "p-2", "w-full");
 
-  const endsAtInput = document.createElement("input");
-  endsAtInput.type = "datetime-local";
-  endsAtInput.classList.add("p-2", "border", "rounded");
+  const mediaWrapper = document.createElement("div");
+  mediaWrapper.classList.add("flex", "flex-col", "gap-2");
 
-  const imageUrlInput = document.createElement("input");
-  imageUrlInput.placeholder = "Image URL";
-  imageUrlInput.classList.add("p-2", "border", "rounded");
+  const addMediaField = () => {
+    const url = document.createElement("input");
+    url.type = "url";
+    url.placeholder = "Image URL";
+    url.name = "imageURL";
+    url.classList.add("border", "rounded", "p-2", "w-full");
 
-  const imageAltInput = document.createElement("input");
-  imageAltInput.placeholder = "Image Alt Text";
-  imageAltInput.classList.add("p-2", "border", "rounded");
+    const alt = document.createElement("input");
+    alt.type = "text";
+    alt.placeholder = "Alt text";
+    alt.name = "imageAltText";
+    alt.classList.add("border", "rounded", "p-2", "w-full");
 
-  const error = document.createElement("p");
-  error.classList.add("text-red-600", "hidden");
+    mediaWrapper.append(url, alt);
+  };
 
-  // 🔘 Knappene
+  addMediaField(); // legg til ett sett som standard
+
+  const addMediaBtn = document.createElement("button");
+  addMediaBtn.type = "button";
+  addMediaBtn.textContent = "+ Add Image";
+  addMediaBtn.classList.add("text-blue-600", "underline", "text-sm", "text-left");
+  addMediaBtn.addEventListener("click", addMediaField);
+
+  const errorMessage = document.createElement("p");
+  errorMessage.classList.add("text-red-600", "text-center", "hidden");
+
   const buttons = document.createElement("div");
-  buttons.classList.add("flex", "justify-between", "gap-4");
-
-  const cancelBtn = document.createElement("button");
-  cancelBtn.textContent = "Cancel";
-  cancelBtn.classList.add("bg-gray-300", "rounded", "py-2", "px-4", "w-full");
-  cancelBtn.addEventListener("click", () => modal.remove());
+  buttons.classList.add("flex", "justify-between", "gap-2", "mt-4");
 
   const submitBtn = document.createElement("button");
   submitBtn.textContent = "Create Listing";
-  submitBtn.classList.add("bg-violet-700", "text-white", "rounded", "py-2", "px-4", "w-full");
+  submitBtn.classList.add("bg-violet-700", "text-white", "py-2", "px-4", "rounded", "w-full");
+
+  const cancelBtn = document.createElement("button");
+  cancelBtn.textContent = "Cancel";
+  cancelBtn.classList.add("bg-gray-300", "py-2", "px-4", "rounded", "w-full");
+
+  cancelBtn.addEventListener("click", () => modal.remove());
 
   submitBtn.addEventListener("click", async () => {
+    errorMessage.classList.add("hidden");
+
     const title = titleInput.value.trim();
     const description = descInput.value.trim();
-    const tags = tagsInput.value.split(",").map((tag) => tag.trim()).filter(Boolean);
-    const endsAt = new Date(endsAtInput.value).toISOString();
-    const media = [{ url: imageUrlInput.value.trim(), alt: imageAltInput.value.trim() }];
+    const endsAt = new Date(endInput.value).toISOString();
 
-    if (!title || !endsAtInput.value) {
-      error.textContent = "Title and End Date are required";
-      error.classList.remove("hidden");
+    const media = Array.from(mediaWrapper.querySelectorAll('input[name="imageURL"]')).map((urlInput, i) => {
+      const altInput = mediaWrapper.querySelectorAll('input[name="imageAltText"]')[i];
+      return {
+        url: urlInput.value,
+        alt: altInput?.value || ""
+      };
+    }).filter(m => m.url);
+
+    if (!title || !endInput.value) {
+      errorMessage.textContent = "Title and end date are required.";
+      errorMessage.classList.remove("hidden");
       return;
     }
 
     try {
-      submitBtn.disabled = true;
-      const result = await createListing({ title, description, tags, media, endsAt });
-      modal.remove();
-      window.location.href = `/listing/?id=${result.id}`;
+      await createListing({ title, description, media, endsAt });
+
+      modal.remove();               // ✅ Lukk modal
+      window.location.reload();     // 🔁 Oppdater profilen
     } catch (err) {
-      error.textContent = err.message || "Failed to create listing";
-      error.classList.remove("hidden");
-      submitBtn.disabled = false;
+      errorMessage.textContent = err.message || "Failed to create listing.";
+      errorMessage.classList.remove("hidden");
     }
   });
 
   buttons.append(cancelBtn, submitBtn);
+  dialog.append(title, titleInput, descInput, endInput, mediaWrapper, addMediaBtn, errorMessage, buttons);
+  modal.appendChild(dialog);
 
-  dialog.append(
-    heading,
-    titleInput,
-    descInput,
-    tagsInput,
-    endsAtInput,
-    imageUrlInput,
-    imageAltInput,
-    error,
-    buttons
-  );
-
-  modal.append(dialog);
   document.body.appendChild(modal);
 
   modal.addEventListener("click", (e) => {

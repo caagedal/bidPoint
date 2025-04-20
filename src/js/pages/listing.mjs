@@ -4,139 +4,151 @@ import { createCountdown } from "../utils/countDownTimer.mjs";
 import { createBidHistoryCard } from "../components/listing/bidHistoryCard.mjs";
 import { errorMessage } from "../components/errorMessage.mjs";
 import { createCarousel } from "../components/gallery/carousel.mjs";
-
 import { placeBid } from "../api/listings/bid.mjs";
 import { createBidModal } from "../components/listing/bidModal.mjs";
-
 
 const params = new URLSearchParams(window.location.search);
 const id = params.get("id");
 
-export async function renderListing(){
-
-  const main = document.querySelector("#listingId");  
+export async function renderListing() {
+  const main = document.querySelector("#listingId");
+  if (!main) return;
 
   if (!id) {
     main.textContent = "No listing ID found.";
     return;
   }
 
-  try{
+  try {
     const listing = await getListing(id);
     const user = getUser();
     const bids = listing.bids || [];
     const lastBid = bids.length > 0 ? Math.max(...bids.map((bid) => bid.amount)) : 0;
 
-    // Wrapper - 1
     const wrapper = document.createElement("div");
-    wrapper.classList.add("flex", "flex-col")
+    wrapper.classList.add("max-w-6xl", "mx-auto", "p-4", "flex", "flex-col", "gap-8");
 
-    // Image container - 2
-    // const imgContainer = document.createElement("div");
-    // imgContainer.id = "imgContainer";
-    const imgCarousel = createCarousel(listing.media);
+    const carousel = createCarousel(listing.media);
+    carousel.classList.add("w-full", "rounded", "overflow-hidden", "shadow");
 
-    // Content container - 2
-    const contentContainer = document.createElement("div");
-    contentContainer.classList.add("flex", "flex-col", "p-6");
+    const content = document.createElement("div");
+    content.classList.add("flex", "flex-col", "gap-6", "w-full");
 
-    // text-container
-    const infoContainer = document.createElement("div");
-    infoContainer.classList.add("flex", "justify-between");
+    const header = document.createElement("div");
+    header.classList.add("flex", "justify-between", "items-start", "flex-wrap", "gap-4");
 
-    const textContainer = document.createElement("div");
-    textContainer.classList.add("flex", "flex-col");
+    const textInfo = document.createElement("div");
 
-    const sellerLink = document.createElement("a");
-    sellerLink.href = `/profile/?name=${listing.seller?.name}`;
-    sellerLink.textContent = listing.seller?.name;
+    const sellerName = listing.seller?.name || "Unknown seller";
+    const sellerEl = document.createElement(isLoggedIn() ? "a" : "span");
+    sellerEl.textContent = sellerName;
+
+    if (isLoggedIn()) {
+      sellerEl.href = `/user/?name=${encodeURIComponent(sellerName)}`;
+      sellerEl.classList.add("text-sm", "text-blue-600", "hover:underline");
+    } else {
+      sellerEl.classList.add("text-sm", "text-gray-500");
+    }
 
     const title = document.createElement("h1");
     title.textContent = listing.title;
+    title.classList.add("text-3xl", "font-bold", "text-gray-900");
 
-    textContainer.append(sellerLink, title);
+    textInfo.append(sellerEl, title);
 
-    // Current bid information
-    const currentBidInfo = document.createElement("div");
-    currentBidInfo.classList.add("flex", "flex-col");
+    const bidInfo = document.createElement("div");
+    bidInfo.classList.add("text-right");
 
-    const currentBid = document.createElement("p");
-    currentBid.classList.add("text-gray-500");
-    currentBid.textContent = "Current bid";
+    const currentLabel = document.createElement("p");
+    currentLabel.textContent = "Current bid";
+    currentLabel.classList.add("text-sm", "text-gray-500");
 
-    const currentBidAmount = document.createElement("p");
-    currentBidAmount.classList.add("font-semibold");
-    currentBidAmount.textContent = "$" + lastBid;
+    const currentAmount = document.createElement("p");
+    currentAmount.textContent = `$${lastBid}`;
+    currentAmount.classList.add("text-2xl", "font-semibold");
 
-    currentBidInfo.append(currentBid, currentBidAmount);
+    bidInfo.append(currentLabel, currentAmount);
+    header.append(textInfo, bidInfo);
 
-    // Countdown container - 3
-    const countDownContainer = document.createElement("div");
-
-    createCountdown(listing.endsAt, (text, expired) => {
-      countDownContainer.textContent = text;
+    const countdown = document.createElement("div");
+    countdown.classList.add("text-md", "text-gray-700", "font-medium");
+    createCountdown(listing.endsAt, (text) => {
+      countdown.textContent = `Ends in: ${text}`;
     });
 
-    // Bid history container - 3
-    const historyContainer = document.createElement("div");
-    historyContainer.classList.add("flex", "flex-wrap", "gap-6");
+    if (listing.description) {
+      const desc = document.createElement("p");
+      desc.textContent = listing.description;
+      desc.classList.add("text-gray-800", "leading-relaxed");
+      content.appendChild(desc);
+    }
 
-    bids
-  .sort((a, b) => new Date(b.created) - new Date(a.created))
-  .forEach((bid) => {
-    const bidCard = createBidHistoryCard(bid);
-    historyContainer.append(bidCard);
-  });
+    const bidButtonSection = document.createElement("div");
 
-    
-    // bid button - 3 
-    const bidButtonContainer = document.createElement("div");
-
-    if (!isLoggedIn()){
-      const logInMessage = document.createElement("p");
-      logInMessage.classList.add("font-semibold");
-      logInMessage.textContent = "You have to be logged in to place a bid.";
+    if (!isLoggedIn()) {
+      const msg = document.createElement("p");
+      msg.textContent = "You must be logged in to place a bid.";
+      msg.classList.add("text-sm", "text-gray-600");
 
       const loginLink = document.createElement("a");
       loginLink.href = "/user/login";
+      loginLink.textContent = "Login here";
+      loginLink.classList.add("text-blue-600", "hover:underline", "ml-1");
 
-      bidButtonContainer.append(logInMessage, loginLink);
-    }else if(user?.name === listing.seller?.name){
-      const userMessage = document.createElement("p");
-      userMessage.classList.add("font-semibold");
-      userMessage.textContent = "You cannot place bids on your own listings."
+      bidButtonSection.append(msg, loginLink);
+    } else if (user?.name === listing.seller?.name) {
+      const msg = document.createElement("p");
+      msg.textContent = "You cannot bid on your own listing.";
+      msg.classList.add("text-sm", "text-gray-600");
+      bidButtonSection.append(msg);
+    } else {
+      const bidBtn = document.createElement("button");
+      bidBtn.textContent = "Place Bid";
+      bidBtn.classList.add(
+        "bg-violet-700", "text-white", "py-3", "px-6", "rounded",
+        "hover:bg-violet-800", "transition", "w-full", "sm:w-auto"
+      );
 
-      bidButtonContainer.append(userMessage);
-    }else{
-      const bidButton = document.createElement("button");
-      bidButton.classList.add("bg-violet-700","rounded-4xl","py-3", "px-12", "text-white", "font-semibold");
-      bidButton.textContent = "Place bid";
-      bidButton.addEventListener("click", () => {
+      bidBtn.addEventListener("click", () => {
         createBidModal({
           listing,
           minBid: lastBid + 1,
           onSubmit: async (amount) => {
             await placeBid(listing.id, amount);
+            renderListing(); // 🔄 Refresh
           },
         });
       });
 
-
-      bidButtonContainer.append(bidButton);
-
+      bidButtonSection.append(bidBtn);
     }
-    
-    wrapper.append(imgCarousel, contentContainer);
-    contentContainer.append(infoContainer, countDownContainer, bidButtonContainer, historyContainer);
-    infoContainer.append(textContainer, currentBidInfo);
-    main.append(wrapper);
-  }catch (error) {
+
+    const historyWrapper = document.createElement("div");
+    historyWrapper.classList.add("mt-6");
+
+    const historyTitle = document.createElement("h3");
+    historyTitle.textContent = "Bid History";
+    historyTitle.classList.add("text-xl", "font-semibold", "mb-2");
+
+    const historyGrid = document.createElement("div");
+    historyGrid.classList.add("grid", "grid-cols-1", "sm:grid-cols-2", "gap-4");
+
+    bids
+      .sort((a, b) => new Date(b.created) - new Date(a.created))
+      .forEach((bid) => {
+        historyGrid.appendChild(createBidHistoryCard(bid));
+      });
+
+    historyWrapper.append(historyTitle, historyGrid);
+
+    content.append(header, countdown, bidButtonSection, historyWrapper);
+    wrapper.append(carousel, content);
+
+    main.innerHTML = "";
+    main.appendChild(wrapper);
+
+  } catch (error) {
     console.error("Error loading listing:", error);
     errorMessage("main", error.message);
   }
-  
-
 }
-
-renderListing();
-

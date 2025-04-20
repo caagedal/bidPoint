@@ -64,7 +64,7 @@ export async function createHeader() {
 
     const logout = document.createElement("button");
     logout.innerHTML = '<i class="fa-solid fa-right-from-bracket"></i>';
-    logout.classList.add("text-red-600", "text-2xl", "ml-auto", "md:ml-0");
+    logout.classList.add("text-violet-700", "text-2xl", "ml-auto", "md:ml-0", "cursor-pointer", "hover:text-violet-500");
     logout.addEventListener("click", () => {
       localStorage.clear();
       window.location.href = "/";
@@ -75,12 +75,12 @@ export async function createHeader() {
     const login = document.createElement("a");
     login.href = "/user/login/index.html";
     login.textContent = "Login";
-    login.classList.add("text-blue-600", "font-medium");
+    login.classList.add("text-white","bg-violet-700", "rounded-xl","py-2", "px-4", "font-medium", "hover:bg-violet-600", "cursor-pointer");
 
     const register = document.createElement("a");
     register.href = "/user/register/index.html";
     register.textContent = "Register";
-    register.classList.add("text-blue-600", "font-medium");
+    register.classList.add("text-violet-700","bg-rose-200", "rounded-xl","py-2", "px-4", "font-medium", "hover:bg-rose-100", "cursor-pointer");
 
     rightSection.append(login, register);
   }

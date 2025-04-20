@@ -7,12 +7,14 @@ import { authFetch } from "../authFetch.mjs";
  * @param {object} data - Listing data object (title, description, endsAt, media, tags)
  * @returns {object} - The created listing
  */
+
+
 export async function createListing(data) {
   if (!data?.title || !data?.endsAt) {
     throw new Error("Title and end date are required.");
   }
 
-  const response = await authFetch(API_LISTINGS, {
+  const result = await authFetch(API_LISTINGS, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -20,5 +22,7 @@ export async function createListing(data) {
     body: JSON.stringify(data),
   });
 
-  return response;
+  return result.data; // ✔️ Dette er selve listing-objektet, med .id
 }
+
+

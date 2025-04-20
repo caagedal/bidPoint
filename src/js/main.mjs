@@ -1,6 +1,5 @@
-import { renderListings } from "./pages/homePage.mjs";
 import { createHeader } from "./components/header.mjs";
-
+import { router } from "./router.mjs";
 
 createHeader();
-renderListings();
+router();
