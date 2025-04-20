@@ -73,12 +73,12 @@ export async function createHeader() {
     rightSection.append(userInfo, logout);
   } else {
     const login = document.createElement("a");
-    login.href = "/user/login/index.html";
+    login.href = "/user/login/";
     login.textContent = "Login";
     login.classList.add("text-white","bg-violet-700", "rounded-xl","py-2", "px-4", "font-medium", "hover:bg-violet-600", "cursor-pointer");
 
     const register = document.createElement("a");
-    register.href = "/user/register/index.html";
+    register.href = "/user/register/";
     register.textContent = "Register";
     register.classList.add("text-violet-700","bg-rose-200", "rounded-xl","py-2", "px-4", "font-medium", "hover:bg-rose-100", "cursor-pointer");
 
