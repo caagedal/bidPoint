@@ -1,4 +1,4 @@
-import { placeholder } from "../../utils/placeHolder.mjs";
+import { placeholder } from "../../utils/placeholder.mjs";
 
 export function createModal(images = []) {
   const modal = document.createElement("div");

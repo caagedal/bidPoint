@@ -1,5 +1,5 @@
 import { createModal } from "./modal.mjs";
-import { placeholder } from "../../utils/placeHolder.mjs";
+import { placeholder } from "../../utils/placeholder.mjs";
 
 /**
  * Lager bildekarusell for én listing.
