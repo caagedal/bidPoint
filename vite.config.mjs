@@ -12,6 +12,8 @@ export default defineConfig({
         main: resolve(__dirname, 'index.html'),
         login: resolve(__dirname, 'user/login/index.html'),
         listing: resolve(__dirname, 'listing/index.html'),
+        register: resolve(__dirname, 'user/register/index.html'),
+        profile: resolve(__dirname, 'user/index.html')
         // legg til flere sider her om du har dem
       }
     }
