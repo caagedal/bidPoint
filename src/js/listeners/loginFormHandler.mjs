@@ -1,9 +1,15 @@
 import { loginUser } from "../api/auth/login.mjs";
 import { createHeader } from "../components/header.mjs";
 
+/**
+ * Sets up the login form's submit behavior.
+ * 
+ * Handles user login, error display, and redirects on success.
+ *
+ * @returns {void}
+ */
 export function loginForm() {
   const form = document.querySelector("#loginForm");
-
   if (!form) return;
 
   form.addEventListener("submit", async (event) => {
@@ -23,5 +29,6 @@ export function loginForm() {
   });
 }
 
+// Initialize page components
 createHeader();
 loginForm();

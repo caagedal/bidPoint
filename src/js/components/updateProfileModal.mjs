@@ -1,7 +1,19 @@
 import { updateProfile } from "../api/profile/update.mjs";
 
+/**
+ * Creates and displays a modal for editing the user's profile.
+ *
+ * @param {object} profile - The current user profile data.
+ * @param {string} [profile.bio] - The user's bio text.
+ * @param {object} [profile.avatar] - The user's avatar object.
+ * @param {string} [profile.avatar.url] - URL to the avatar image.
+ * @param {object} [profile.banner] - The user's banner object.
+ * @param {string} [profile.banner.url] - URL to the banner image.
+ * @param {function} [onSuccess] - Optional callback to execute after a successful update.
+ * @returns {HTMLElement} The modal DOM element.
+ */
 export function updateProfileModal(profile, onSuccess) {
-  // Fjern tidligere modal hvis den finnes
+  // Remove any existing modals
   document.querySelectorAll(".update-profile-modal").forEach((m) => m.remove());
 
   const modal = document.createElement("div");
@@ -48,7 +60,6 @@ export function updateProfileModal(profile, onSuccess) {
   const cancelBtn = document.createElement("button");
   cancelBtn.textContent = "Cancel";
   cancelBtn.classList.add("bg-gray-300", "py-2", "px-4", "rounded", "w-full");
-
   cancelBtn.addEventListener("click", () => modal.remove());
 
   saveBtn.addEventListener("click", async () => {
@@ -62,7 +73,9 @@ export function updateProfileModal(profile, onSuccess) {
       });
 
       modal.remove();
-      if (typeof onSuccess === "function") onSuccess(updated);
+      if (typeof onSuccess === "function") {
+        onSuccess(updated);
+      }
     } catch (err) {
       error.textContent = err.message || "Failed to update profile";
       error.classList.remove("hidden");
@@ -72,7 +85,6 @@ export function updateProfileModal(profile, onSuccess) {
   buttons.append(cancelBtn, saveBtn);
   dialog.append(title, bioInput, avatarInput, bannerInput, error, buttons);
   modal.appendChild(dialog);
-
   document.body.appendChild(modal);
 
   modal.addEventListener("click", (e) => {

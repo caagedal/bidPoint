@@ -6,13 +6,15 @@ import { createListingModal } from "../components/createListingModal.mjs";
 import { updateProfileModal } from "../components/updateProfileModal.mjs";
 import { createHeader } from "../components/header.mjs";
 
+/**
+ * Renders a user profile page including listings, wins, and profile actions.
+ * If no `name` param is found, it shows the current logged-in user's profile.
+ *
+ * @returns {Promise<void>} Resolves after profile data is fetched and rendered.
+ */
 export async function renderProfile() {
   const main = document.querySelector("#profilePage");
-if (!main) {
-  
-  return;
-}
-
+  if (!main) return;
 
   const params = new URLSearchParams(window.location.search);
   const profileName = params.get("name");
@@ -32,7 +34,7 @@ if (!main) {
     const listings = profile.listings || [];
     const wins = profile.wins || [];
 
-    // 🔹 Banner
+    // --- Banner Section ---
     const bannerWrapper = document.createElement("div");
     bannerWrapper.classList.add("relative", "mb-4");
 
@@ -42,18 +44,18 @@ if (!main) {
     banner.style.backgroundSize = "cover";
     bannerWrapper.append(banner);
 
-    // 🔹 Edit Profile Button (only for self)
+    // --- Edit Profile Button ---
     let editBtn;
     if (viewingOwnProfile) {
       editBtn = document.createElement("button");
-      editBtn.textContent = "✏️ Edit Profile";
-      editBtn.classList.add("bg-white", "px-3", "py-1", "rounded", "shadow", "text-sm", "mb-6");
+      editBtn.textContent = "Edit Profile";
+      editBtn.classList.add("font-semibold", "bg-rose-200", "px-3", "py-1", "rounded-xl", "shadow", "text-sm", "mb-6", "text-neutral-800");
       editBtn.addEventListener("click", () => {
         updateProfileModal(profile, () => renderProfile());
       });
     }
 
-    // 🔹 Profile Info
+    // --- Profile Info Section ---
     const profileInfo = document.createElement("section");
     profileInfo.classList.add("flex", "items-center", "gap-4", "mb-6");
 
@@ -63,9 +65,10 @@ if (!main) {
     avatar.classList.add("w-20", "h-20", "rounded-full", "object-cover", "shadow");
 
     const info = document.createElement("div");
+
     const username = document.createElement("h1");
     username.textContent = profile.name;
-    username.classList.add("text-2xl", "font-bold");
+    username.classList.add("text-2xl", "font-bold", "text-neutral-800");
 
     const email = document.createElement("p");
     email.textContent = profile.email;
@@ -73,67 +76,74 @@ if (!main) {
 
     const bio = document.createElement("p");
     bio.textContent = profile.bio || "No bio added.";
-    bio.classList.add("mt-2", "text-sm");
+    bio.classList.add("mt-2", "text-sm", "text-neutral-800");
 
     info.append(username, email, bio);
     profileInfo.append(avatar, info);
 
-    // 🔹 Create Listing Button (only for self)
+    // --- Create Listing Button ---
     let createBtn;
     if (viewingOwnProfile) {
       createBtn = document.createElement("button");
-      createBtn.textContent = "➕ Create New Listing";
-      createBtn.classList.add("bg-blue-600", "text-white", "py-2", "px-4", "rounded", "mb-6");
+      createBtn.textContent = "Create New Listing";
+      createBtn.classList.add("bg-violet-700", "text-white", "py-2", "px-4", "rounded-2xl", "my-8", "font-semibold");
       createBtn.addEventListener("click", () => {
         createListingModal(() => renderProfile());
       });
     }
 
-    // 🔹 Listings
+    // --- Listings Section ---
     const listingsSection = document.createElement("section");
     listingsSection.classList.add("mb-10");
 
     const listingsTitle = document.createElement("h2");
     listingsTitle.textContent = viewingOwnProfile ? "Your Listings" : `${profile.name}'s Listings`;
-    listingsTitle.classList.add("text-xl", "font-semibold", "mb-4");
+    listingsTitle.classList.add("text-xl", "font-semibold", "mb-4", "mt-10", "text-neutral-800");
 
     const listingGrid = document.createElement("div");
     listingGrid.classList.add("grid", "grid-cols-1", "sm:grid-cols-2", "lg:grid-cols-4", "gap-4");
+
+    listingsSection.append(listingsTitle);
 
     if (listings.length === 0) {
       const emptyMsg = document.createElement("p");
       emptyMsg.textContent = viewingOwnProfile
         ? "You haven't created any listings yet."
         : `${profile.name} hasn't created any listings yet.`;
-      emptyMsg.classList.add("text-gray-500", "italic", "mb-4");
-      listingsSection.appendChild(emptyMsg);
+      emptyMsg.classList.add("text-gray-500", "italic", "m-4", "col-span-full", "text-center");
+      listingGrid.append(emptyMsg);
+    } else {
+      listings.forEach((listing) => {
+        const card = listingCard(listing);
+        const wrapper = document.createElement("div");
+
+        if (viewingOwnProfile) {
+          const deleteWrapper = document.createElement("div");
+          deleteWrapper.classList.add("flex", "justify-end");
+
+          const deleteBtn = document.createElement("button");
+          deleteBtn.innerHTML = '<i class="fa-solid fa-trash"></i> Delete';
+          deleteBtn.classList.add("text-red-500", "text-sm", "mt-2", "mb-4", "hover:underline", "font-semibold");
+          deleteBtn.addEventListener("click", async () => {
+            if (confirm(`Are you sure you want to delete \"${listing.title}\"?`)) {
+              await deleteListing(listing.id);
+              renderProfile();
+            }
+          });
+
+          deleteWrapper.append(deleteBtn);
+          wrapper.append(card, deleteWrapper);
+        } else {
+          wrapper.append(card);
+        }
+
+        listingGrid.append(wrapper);
+      });
     }
 
-    listings.forEach((listing) => {
-      const card = listingCard(listing);
-      const wrapper = document.createElement("div");
+    listingsSection.append(listingGrid);
 
-      if (viewingOwnProfile) {
-        const deleteBtn = document.createElement("button");
-        deleteBtn.textContent = "🗑️ Delete";
-        deleteBtn.classList.add("text-red-500", "text-sm", "mt-2", "hover:underline");
-        deleteBtn.addEventListener("click", async () => {
-          if (confirm(`Are you sure you want to delete "${listing.title}"?`)) {
-            await deleteListing(listing.id);
-            renderProfile();
-          }
-        });
-        wrapper.append(card, deleteBtn);
-      } else {
-        wrapper.append(card);
-      }
-
-      listingGrid.append(wrapper);
-    });
-
-    listingsSection.append(listingsTitle, listingGrid);
-
-    // 🔹 Wins (only for self)
+    // --- Wins Section (Only for self) ---
     let winsSection;
     if (viewingOwnProfile && wins.length) {
       winsSection = document.createElement("section");
@@ -152,7 +162,7 @@ if (!main) {
       winsSection.append(winsTitle, winsGrid);
     }
 
-    // 🔹 Inject all to DOM
+    // --- Append Everything to DOM ---
     main.innerHTML = "";
     main.append(
       bannerWrapper,
@@ -167,5 +177,6 @@ if (!main) {
   }
 }
 
+// Initialize
 renderProfile();
 createHeader();

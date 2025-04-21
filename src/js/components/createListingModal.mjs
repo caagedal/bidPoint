@@ -1,7 +1,12 @@
 import { createListing } from "../api/listings/create.mjs";
 
+/**
+ * Creates and displays a modal form for creating a new listing.
+ *
+ * @returns {HTMLElement} The modal DOM element.
+ */
 export function createListingModal() {
-  // Fjern tidligere modal hvis den finnes
+  // Remove any existing modals
   document.querySelectorAll(".create-listing-modal").forEach((m) => m.remove());
 
   const modal = document.createElement("div");
@@ -34,6 +39,9 @@ export function createListingModal() {
   const mediaWrapper = document.createElement("div");
   mediaWrapper.classList.add("flex", "flex-col", "gap-2");
 
+  /**
+   * Appends a new media URL + alt text input set to the form.
+   */
   const addMediaField = () => {
     const url = document.createElement("input");
     url.type = "url";
@@ -50,7 +58,7 @@ export function createListingModal() {
     mediaWrapper.append(url, alt);
   };
 
-  addMediaField(); // legg til ett sett som standard
+  addMediaField(); // Add one default set
 
   const addMediaBtn = document.createElement("button");
   addMediaBtn.type = "button";
@@ -71,7 +79,6 @@ export function createListingModal() {
   const cancelBtn = document.createElement("button");
   cancelBtn.textContent = "Cancel";
   cancelBtn.classList.add("bg-gray-300", "py-2", "px-4", "rounded", "w-full");
-
   cancelBtn.addEventListener("click", () => modal.remove());
 
   submitBtn.addEventListener("click", async () => {
@@ -87,7 +94,7 @@ export function createListingModal() {
         url: urlInput.value,
         alt: altInput?.value || ""
       };
-    }).filter(m => m.url);
+    }).filter(m => m.url); // Only include media with a URL
 
     if (!title || !endInput.value) {
       errorMessage.textContent = "Title and end date are required.";
@@ -97,9 +104,8 @@ export function createListingModal() {
 
     try {
       await createListing({ title, description, media, endsAt });
-
-      modal.remove();               // ✅ Lukk modal
-      window.location.reload();     // 🔁 Oppdater profilen
+      modal.remove();               // Close modal
+      window.location.reload();     // Refresh to reflect new listing
     } catch (err) {
       errorMessage.textContent = err.message || "Failed to create listing.";
       errorMessage.classList.remove("hidden");
@@ -107,11 +113,21 @@ export function createListingModal() {
   });
 
   buttons.append(cancelBtn, submitBtn);
-  dialog.append(title, titleInput, descInput, endInput, mediaWrapper, addMediaBtn, errorMessage, buttons);
-  modal.appendChild(dialog);
+  dialog.append(
+    title,
+    titleInput,
+    descInput,
+    endInput,
+    mediaWrapper,
+    addMediaBtn,
+    errorMessage,
+    buttons
+  );
 
+  modal.appendChild(dialog);
   document.body.appendChild(modal);
 
+  // Close on outside click
   modal.addEventListener("click", (e) => {
     if (e.target === modal) modal.remove();
   });

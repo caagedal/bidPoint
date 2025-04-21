@@ -1,14 +1,20 @@
 import { getListingsBySearch } from "../../api/listings/display.mjs";
 import { listingCard } from "../listingCard.mjs";
 
+/**
+ * Renders search results into a `.listing-grid` container based on the query.
+ *
+ * @param {string} query - The search term to query listings by.
+ * @returns {Promise<void>} Resolves once the results are rendered.
+ */
 export async function renderSearchResults(query) {
   const grid = document.querySelector(".listing-grid");
   if (!grid || !query) return;
 
-  // Fjern tidligere innhold
+  // Clear previous results
   grid.replaceChildren();
 
-  // 🔍 Vis "søker"-melding
+  // Show loading message
   const loadingMsg = document.createElement("p");
   loadingMsg.textContent = `Searching for "${query}"...`;
   loadingMsg.classList.add("text-gray-600", "italic");
@@ -17,7 +23,7 @@ export async function renderSearchResults(query) {
   try {
     const listings = await getListingsBySearch(query);
 
-    // Tøm grid og fjern loading
+    // Clear grid again before rendering results
     grid.replaceChildren();
 
     if (listings.length === 0) {

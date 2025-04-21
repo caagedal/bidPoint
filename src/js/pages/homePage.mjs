@@ -4,6 +4,13 @@ import { renderSearchResults } from "../components/listing/renderSearchResults.m
 import { renderPagination } from "../components/listing/renderPagination.mjs";
 import { createHeader } from "../components/header.mjs";
 
+/**
+ * Renders a paginated list of listings and attaches search functionality.
+ *
+ * @param {number} [limit=24] - Number of listings per page.
+ * @param {number} [page=1] - Current page number.
+ * @returns {Promise<void>} Resolves when listings and pagination are rendered.
+ */
 export async function renderListings(limit = 24, page = 1) {
   const grid = document.querySelector(".listing-grid");
   const pagination = document.querySelector("#pagination");
@@ -11,14 +18,14 @@ export async function renderListings(limit = 24, page = 1) {
 
   if (!grid || !pagination) return;
 
-  // 🔍 Søkefunksjon
+  // 🔍 Search input listener
   if (searchInput) {
     searchInput.addEventListener("keydown", (e) => {
       if (e.key === "Enter") {
         const query = searchInput.value.trim();
         if (query) {
           renderSearchResults(query);
-          pagination.innerHTML = ""; // skjul paginering ved søk
+          pagination.innerHTML = ""; // Hide pagination on search
         }
       }
     });
@@ -29,14 +36,14 @@ export async function renderListings(limit = 24, page = 1) {
     const listings = result.data;
     const totalPages = result.meta.pageCount;
 
-    grid.innerHTML = ""; // Clear old listings
+    grid.innerHTML = ""; // Clear previous results
 
     listings.forEach((listing) => {
       const card = listingCard(listing);
       grid.appendChild(card);
     });
 
-    // 📄 Paginering
+    // 📄 Pagination
     renderPagination(pagination, page, totalPages, (newPage) => renderListings(limit, newPage));
   } catch (error) {
     console.error("Failed to render listings:", error.message);
@@ -51,5 +58,6 @@ export async function renderListings(limit = 24, page = 1) {
   }
 }
 
+// Initialize page
 renderListings();
 createHeader();

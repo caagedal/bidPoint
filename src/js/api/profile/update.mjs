@@ -1,14 +1,19 @@
-// src/js/api/profile/updateProfile.mjs
 import { API_PROFILE, API_KEY } from "../constants.mjs";
 import { load } from "../../storage/index.mjs";
 
 /**
- * Updates the user's profile (avatar, banner, bio)
- * @param {object} data - profile update object (avatar, banner, bio)
+ * Updates the user's profile with new avatar, banner, or bio.
+ *
+ * @param {object} data - The profile update data.
+ * @param {string} [data.avatar] - Optional URL to the user's new avatar image.
+ * @param {string} [data.banner] - Optional URL to the user's new banner image.
+ * @param {string} [data.bio] - Optional user bio text.
+ * @returns {Promise<object>} The updated profile object.
+ * @throws {Error} If the user is not logged in or the request fails.
  */
 export async function updateProfile(data = {}) {
   const user = load("profile");
-  if (!user?.name) throw new Error("Missing username for update");
+  if (!user?.name) throw new Error("Missing username for profile update.");
 
   const url = `${API_PROFILE}/${user.name}`;
 

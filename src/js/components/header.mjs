@@ -1,34 +1,43 @@
 import { getProfile } from "../api/profile/get.mjs";
 import { isLoggedIn, getUser } from "../api/auth/session.mjs";
 
+/**
+ * Dynamically creates and inserts a responsive header with navigation, user info, and login/logout options.
+ * 
+ * - If the user is logged in: shows avatar, credits, and logout.
+ * - If not: shows login and register buttons.
+ *
+ * @returns {Promise<void>} Resolves when the header is created.
+ */
 export async function createHeader() {
   const header = document.querySelector("header");
-  header.classList.add(
-    "bg-white", "shadow", "sticky", "top-0", "z-50"
-  );
+  if (!header) return;
+
+  header.classList.add("bg-white", "shadow", "sticky", "top-0", "z-50");
 
   const nav = document.createElement("nav");
   nav.classList.add("max-w-6xl", "flex", "justify-between", "items-center", "mx-auto", "p-4", "w-full");
 
-  // 🔹 Logo
+  // Logo
   const logo = document.createElement("a");
   logo.href = "/";
   logo.textContent = "bidPoint";
   logo.classList.add("text-4xl", "sm:text-5xl", "font-bold", "text-violet-700", "font-rock");
 
-  // 🔹 Toggle button for mobile
+  // Toggle button for mobile
   const toggleBtn = document.createElement("button");
   toggleBtn.classList.add("md:hidden", "text-2xl");
   toggleBtn.innerHTML = `<i class="fa-solid fa-bars"></i>`;
 
-  // 🔹 Right section (initially hidden on mobile)
+  // Right nav section
   const rightSection = document.createElement("div");
   rightSection.classList.add(
     "flex-col", "md:flex", "md:flex-row", "items-start", "md:items-center", "gap-6",
-    "hidden", "md:flex", "absolute", "md:static", "top-full", "left-0", "w-full", "md:w-auto", "bg-white", "p-4", "md:p-0", "shadow", "md:shadow-none", "transition-all"
+    "hidden", "md:flex", "absolute", "md:static", "top-full", "left-0", "w-full", "md:w-auto",
+    "bg-white", "p-4", "md:p-0", "shadow", "md:shadow-none", "transition-all"
   );
 
-  // 🔹 Toggle logic
+  // Toggle menu visibility
   toggleBtn.addEventListener("click", () => {
     rightSection.classList.toggle("hidden");
   });
@@ -49,7 +58,7 @@ export async function createHeader() {
 
     const profileLink = document.createElement("a");
     profileLink.href = `/user/?name=${user.name}`;
-    profileLink.classList.add("flex", "flex-col", "text-md", "font-semibold");
+    profileLink.classList.add("flex", "flex-col", "text-md", "font-semibold", "text-neutral-800");
 
     const name = document.createElement("span");
     name.textContent = user.name;
@@ -64,7 +73,10 @@ export async function createHeader() {
 
     const logout = document.createElement("button");
     logout.innerHTML = '<i class="fa-solid fa-right-from-bracket"></i>';
-    logout.classList.add("text-violet-700", "text-2xl", "ml-auto", "md:ml-0", "cursor-pointer", "hover:text-violet-500");
+    logout.classList.add(
+      "text-violet-700", "text-2xl", "ml-auto", "md:ml-0",
+      "cursor-pointer", "hover:text-violet-500"
+    );
     logout.addEventListener("click", () => {
       localStorage.clear();
       window.location.href = "/";
@@ -75,12 +87,18 @@ export async function createHeader() {
     const login = document.createElement("a");
     login.href = "/user/login/";
     login.textContent = "Login";
-    login.classList.add("text-white","bg-violet-700", "rounded-xl","py-2", "px-4", "font-medium", "hover:bg-violet-600", "cursor-pointer");
+    login.classList.add(
+      "text-white", "bg-violet-700", "rounded-xl",
+      "py-2", "px-4", "font-medium", "hover:bg-violet-600", "cursor-pointer"
+    );
 
     const register = document.createElement("a");
     register.href = "/user/register/";
     register.textContent = "Register";
-    register.classList.add("text-violet-700","bg-rose-200", "rounded-xl","py-2", "px-4", "font-medium", "hover:bg-rose-100", "cursor-pointer");
+    register.classList.add(
+      "text-violet-700", "bg-rose-200", "rounded-xl",
+      "py-2", "px-4", "font-medium", "hover:bg-rose-100", "cursor-pointer"
+    );
 
     rightSection.append(login, register);
   }
@@ -88,4 +106,3 @@ export async function createHeader() {
   nav.append(logo, toggleBtn, rightSection);
   header.append(nav);
 }
-

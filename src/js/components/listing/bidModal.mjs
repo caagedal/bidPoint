@@ -1,8 +1,18 @@
 import { getProfile } from "../../api/profile/get.mjs";
 import { getUser } from "../../api/auth/session.mjs";
 
+/**
+ * Creates and displays a modal for placing a bid on a listing.
+ *
+ * @param {object} options - Configuration for the modal.
+ * @param {object} options.listing - The listing being bid on.
+ * @param {string} options.listing.title - The title of the listing.
+ * @param {Array<{url: string}>} [options.listing.media] - Media array with image objects.
+ * @param {number} options.minBid - The minimum bid required.
+ * @param {function(number): Promise<void>} options.onSubmit - Callback to handle bid submission.
+ * @returns {HTMLElement} The modal DOM element.
+ */
 export async function createBidModal({ listing, minBid, onSubmit }) {
-  
   const modal = document.createElement("div");
   modal.classList.add(
     "fixed", "inset-0", "bg-black/60", "flex", "items-center", "justify-center", "z-50", "bid-modal"
@@ -36,11 +46,10 @@ export async function createBidModal({ listing, minBid, onSubmit }) {
   creditsText.textContent = "Loading credits...";
   creditsText.classList.add("text-sm", "text-gray-500", "text-center");
 
-  // 🔄 Hent profil og vis kreditter
   try {
     const { name } = getUser();
     const profileResponse = await getProfile(name);
-    const profile = profileResponse?.data || profileResponse; // fallback i tilfelle direkte respons
+    const profile = profileResponse?.data || profileResponse;
     const userCredits = profile?.credits ?? 0;
 
     creditsText.textContent = `Available credits: ${userCredits}`;
@@ -93,10 +102,9 @@ export async function createBidModal({ listing, minBid, onSubmit }) {
   buttons.append(cancelBtn, submitBtn);
   dialog.append(avatar, title, bidLabel, input, creditsText, errorMessage, buttons);
   modal.appendChild(dialog);
-
-  
   document.body.appendChild(modal);
 
+  // Close modal when clicking outside dialog
   modal.addEventListener("click", (event) => {
     if (event.target === modal) {
       modal.remove();

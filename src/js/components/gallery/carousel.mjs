@@ -2,31 +2,34 @@ import { createModal } from "./modal.mjs";
 import { placeholder } from "../../utils/placeholder.mjs";
 
 /**
- * Lager bildekarusell for én listing.
+ * Creates an interactive image carousel for a single listing.
+ *
+ * @param {Array<{url: string, alt?: string}>} media - Array of image objects.
+ * @returns {HTMLElement} A DOM element containing the carousel.
  */
 export function createCarousel(media = []) {
   const images = media.length ? media : [{ url: placeholder, alt: "No image" }];
   let currentIndex = 0;
 
-  // 🌟 Wrapper for hele karusellen
+  // Wrapper for the carousel
   const wrapper = document.createElement("div");
   wrapper.classList.add("relative", "w-full");
 
-  // 🖼️ Hovedbilde
+  // Main image
   const mainImage = document.createElement("img");
   mainImage.src = images[currentIndex].url;
   mainImage.alt = images[currentIndex].alt || "Image";
   mainImage.classList.add(
-    "w-full", "aspect-video", "rounded", "object-cover", "cursor-pointer",
+    "w-full", "max-h-[500px]", "rounded", "object-cover", "cursor-pointer",
     "transition-transform", "duration-300", "ease-in-out", "hover:scale-105", "shadow"
   );
 
-  // 📸 Modal
+  // Modal for fullscreen view
   const modal = createModal(images);
   document.body.appendChild(modal);
   mainImage.addEventListener("click", () => modal.show(currentIndex));
 
-  // ⬅️ Navigasjon venstre
+  // Left navigation button
   const navLeft = document.createElement("button");
   navLeft.innerHTML = "❮";
   navLeft.classList.add(
@@ -36,7 +39,7 @@ export function createCarousel(media = []) {
   );
   navLeft.addEventListener("click", () => navigate(-1));
 
-  // ➡️ Navigasjon høyre
+  // Right navigation button
   const navRight = document.createElement("button");
   navRight.innerHTML = "❯";
   navRight.classList.add(
@@ -46,17 +49,18 @@ export function createCarousel(media = []) {
   );
   navRight.addEventListener("click", () => navigate(1));
 
-  // 🧩 Thumbnails
+  // Thumbnail container
   const thumbs = document.createElement("div");
-  thumbs.classList.add("flex", "gap-3", "mt-4", "justify-center", "flex-wrap");
+  thumbs.classList.add("flex", "gap-3", "m-4", "justify-center", "flex-wrap");
 
+  // Populate thumbnails
   images.forEach((img, i) => {
     const thumb = document.createElement("img");
     thumb.src = img.url || placeholder;
     thumb.alt = img.alt || `Image ${i + 1}`;
     thumb.classList.add(
       "w-16", "h-16", "object-cover", "rounded", "cursor-pointer",
-      "transition", "duration-200", i === 0 ? "ring-2" : "opacity-60"
+      "transition", "duration-200", i === 0 ? "ring-0" : "opacity-60"
     );
 
     thumb.addEventListener("click", () => {
@@ -67,19 +71,32 @@ export function createCarousel(media = []) {
     thumbs.appendChild(thumb);
   });
 
+  /**
+   * Navigates to the next or previous image in the carousel.
+   * @param {number} step - The number of steps to move (e.g., -1 or 1).
+   */
   const navigate = (step) => {
     currentIndex = (currentIndex + step + images.length) % images.length;
     updateImage();
   };
 
+  /**
+   * Updates the main image and highlights the active thumbnail.
+   */
   const updateImage = () => {
     const { url, alt } = images[currentIndex];
     mainImage.src = url || placeholder;
     mainImage.alt = alt || `Image ${currentIndex + 1}`;
 
     [...thumbs.children].forEach((thumb, i) => {
-      thumb.classList.toggle("ring-2", i === currentIndex);
-      thumb.classList.toggle("opacity-60", i !== currentIndex);
+      if (i === currentIndex) {
+        thumb.classList.add("ring-2", "ring-violet-400");
+        thumb.classList.remove("opacity-60");
+      } else {
+        thumb.classList.remove("ring-2", "ring-violet-400");
+        thumb.classList.add("opacity-60");
+      }
+      
     });
   };
 
