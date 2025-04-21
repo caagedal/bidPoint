@@ -30,16 +30,28 @@ export function updateProfileModal(profile, onSuccess) {
   title.textContent = "Edit Profile";
   title.classList.add("text-xl", "font-bold", "text-center");
 
+  const bioTitle = document.createElement("p");
+  bioTitle.textContent = "Bio";
+  bioTitle.classList.add("font-semibold", "text-violet-700");
+
   const bioInput = document.createElement("textarea");
   bioInput.placeholder = "Bio";
   bioInput.value = profile.bio || "";
   bioInput.classList.add("border", "rounded", "p-2", "w-full");
+
+  const avatarTitle = document.createElement("p");
+  avatarTitle.textContent = "Avatar url";
+  avatarTitle.classList.add("font-semibold", "text-violet-700");
 
   const avatarInput = document.createElement("input");
   avatarInput.type = "url";
   avatarInput.placeholder = "Avatar URL";
   avatarInput.value = profile.avatar?.url || "";
   avatarInput.classList.add("border", "rounded", "p-2", "w-full");
+
+  const bannerTitle = document.createElement("p");
+  bannerTitle.textContent = "Banner url";
+  bannerTitle.classList.add("font-semibold", "text-violet-700");
 
   const bannerInput = document.createElement("input");
   bannerInput.type = "url";
@@ -83,7 +95,7 @@ export function updateProfileModal(profile, onSuccess) {
   });
 
   buttons.append(cancelBtn, saveBtn);
-  dialog.append(title, bioInput, avatarInput, bannerInput, error, buttons);
+  dialog.append(title, bioTitle, bioInput, avatarTitle, avatarInput, bannerTitle, bannerInput, error, buttons);
   modal.appendChild(dialog);
   document.body.appendChild(modal);
 
